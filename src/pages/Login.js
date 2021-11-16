@@ -11,6 +11,7 @@ const validEmailRegex = RegExp(
 );
 
 const user = {  
+
     email: "",
     password: ""  
 }
@@ -40,7 +41,7 @@ export default function Login() {
 
     if (isValid) {
       console.log(formData, "formdata")
-      axios.post('http://blog.joineight.com/api/v1/users/signin', { ...formData }, {
+      axios.post('http://blog.joineight.com/api/v1/users/signin', { user: { ...formData }}, {
         headers: headers
       }).then(response => {
         // handle success
@@ -96,10 +97,7 @@ export default function Login() {
                   name="email"
                   value={formData.email}
                   onChange={e => handleInputChange(e.target.value, e.target.name)}
-                  placeholder="Enter email" />
-                <Form.Text className="text-muted">
-                  We'll never shae your email with anyone else.
-                </Form.Text>
+                  placeholder="Enter email"/>
                 {errors.email.length > 0 &&
                   <span className='error' style={{ color: "red", fontSize: "12px" }}>{errors.email}</span>}
               </Form.Group>
@@ -112,7 +110,6 @@ export default function Login() {
                   value={formData.password}
                   onChange={e => handleInputChange(e.target.value, e.target.name)}
                   placeholder="Enter Password" />
-                {/* <label id="showError" className="error"></label> */}
               </Form.Group>
               <Button variant="primary" type="submit">
                 Submit
