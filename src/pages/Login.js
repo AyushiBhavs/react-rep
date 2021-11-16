@@ -21,7 +21,6 @@ const error = {
 
 export default function Login() {
   const [formData, setFormData] = useState({ ...user });
-
   const [errors, setErrors] = useState({ ...error });
 
 
