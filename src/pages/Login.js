@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { Container, Row, Col, Form, Button } from 'react-bootstrap'
 import axios from 'axios'
+import { dashContext } from '../App'
 
 const headers = {
   'Content-Type': 'application/json',
@@ -10,45 +11,56 @@ const validEmailRegex = RegExp(
   /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
 );
 
-const user = {  
-
-    email: "",
-    password: ""  
+const user = {
+  email: "",
+  password: ""
 }
 const error = {
   email: "",
   password: ""
 }
 
+
 export default function Login() {
-  const [formData, setFormData] = useState({ ...user });
+  const LoginCtx = useContext(dashContext)
+  const [loginData, setLoginData] = useState({ ...user });
   const [errors, setErrors] = useState({ ...error });
 
-
   const submit = async (e) => {
+
+
     e.preventDefault()
     let isValid = true
 
-    if (formData.email === "" || !validEmailRegex.test(formData.email)) {
+    if (loginData.email === "" || !validEmailRegex.test(loginData.email)) {
       error.email = 'Email is not valid!'
       isValid = false
     }
-    if (formData.password === "") {
+    if (loginData.password === "") {
       error.password = 'password is not valid!'
       isValid = false
     }
     setErrors({ ...errors })
 
     if (isValid) {
-      console.log(formData, "formdata")
-      axios.post('http://blog.joineight.com/api/v1/users/signin', { user: { ...formData }}, {
+
+      axios.post('http://blog.joineight.com/api/v1/users/signin', { user: { ...loginData }, }, {
         headers: headers
       }).then(response => {
         // handle success
         console.log(response, "res");
-      }).catch(error => {
+
+        if (response.status === 200) {
+          console.log("enquiry added")
+          setErrors({ ...error })
+          setLoginData({ ...user })
+          LoginCtx.setIsLoggedIn(true)
+        }
+
+
+      }).catch(err => {
         // handle error
-        console.log(error, "error api");
+        console.log(err)
       })
     }
 
@@ -79,7 +91,7 @@ export default function Login() {
       default:
         break;
     }
-    setFormData({ ...formData, [name]: value })
+    setLoginData({ ...loginData, [name]: value })
     setErrors({ ...errors })
   }
   return (
@@ -95,9 +107,9 @@ export default function Login() {
                 <Form.Control
                   type="email"
                   name="email"
-                  value={formData.email}
+                  value={loginData.email}
                   onChange={e => handleInputChange(e.target.value, e.target.name)}
-                  placeholder="Enter email"/>
+                  placeholder="Enter email" />
                 {errors.email.length > 0 &&
                   <span className='error' style={{ color: "red", fontSize: "12px" }}>{errors.email}</span>}
               </Form.Group>
@@ -107,25 +119,30 @@ export default function Login() {
                 <Form.Control
                   type="password"
                   name="password"
-                  value={formData.password}
+                  value={loginData.password}
                   onChange={e => handleInputChange(e.target.value, e.target.name)}
                   placeholder="Enter Password" />
+                {errors.password === "" &&
+                  <span className='error' style={{ color: "red", fontSize: "12px" }}>{errors.password}</span>}
               </Form.Group>
               <Button variant="primary" type="submit">
                 Submit
               </Button>
             </Form>
 
+            <div className=" mt-5">
+              <span>Active User :</span><br />
 
-            <div className="d-none">
-              <span>Active User:</span><br />
-              <Button variant="primary">
+
+              <Button variant="secondary mt-3">
                 Logout
               </Button>
+
             </div>
           </Col>
         </Row>
       </Container>
+
     </>
   )
 }
