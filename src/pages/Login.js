@@ -53,10 +53,10 @@ export default function Login() {
         if (response.status === 200) {
           console.log("enquiry added")
           setErrors({ ...error })
-          setLoginData({ ...user })
-          LoginCtx.setIsLoggedIn(true)
-        }
-
+          setLoginData({ ...user }) 
+         localStorage.setItem("islogged",true)
+          LoginCtx.setIsLoggedIn(true)       
+        }       
 
       }).catch(err => {
         // handle error
@@ -132,12 +132,10 @@ export default function Login() {
 
             <div className=" mt-5">
               <span>Active User :</span><br />
-
-
-              <Button variant="secondary mt-3">
-                Logout
-              </Button>
-
+              
+                
+              
+              
             </div>
           </Col>
         </Row>
